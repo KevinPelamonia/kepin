@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistem Olimpiade Sains</title>
+
+    <!-- LINK CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Sistem Olimpiade Sains</h2>
+
+    <!-- MENU -->
+    <div class="menu">
+        <button onclick="showPage('form')">📝 Pendaftaran</button>
+        <button onclick="showPage('admin')">📊 Admin</button>
+    </div>
+
+    <!-- FORM PENDAFTARAN -->
+    <div id="formPage">
+        <h3>Form Pendaftaran</h3>
+
+        <form id="formDaftar">
+            <input type="text" id="nama" placeholder="Nama Lengkap" required>
+            <input type="text" id="sekolah" placeholder="Sekolah" required>
+
+            <select id="jenjang">
+                <option>SD</option>
+                <option>SMP</option>
+                <option>SMA</option>
+            </select>
+
+            <select id="bidang">
+                <option>Matematika</option>
+                <option>IPA</option>
+                <option>Fisika</option>
+                <option>Kimia</option>
+            </select>
+
+            <button type="submit">Daftar</button>
+        </form>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="adminPage" style="display:none;">
+        <h3>Dashboard Admin</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Sekolah</th>
+                    <th>Jenjang</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody id="tabelPeserta"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+// pindah halaman
+function showPage(page) {
+    document.getElementById("formPage").style.display = "none";
+    document.getElementById("adminPage").style.display = "none";
+
+    if (page === "form") {
+        document.getElementById("formPage").style.display = "block";
+    } else {
+        document.getElementById("adminPage").style.display = "block";
+        tampilkanData();
+    }
+}
+
+// submit form
+document.getElementById("formDaftar").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    let data = {
+        nama: document.getElementById("nama").value,
+        sekolah: document.getElementById("sekolah").value,
+        jenjang: document.getElementById("jenjang").value,
+        bidang: document.getElementById("bidang").value,
+        status: "Pending"
+    };
+
+    let peserta = JSON.parse(localStorage.getItem("peserta")) || [];
+    peserta.push(data);
+
+    localStorage.setItem("peserta", JSON.stringify(peserta));
+
+    alert("Pendaftaran berhasil!");
+    this.reset();
+});
+
+// tampilkan data admin
+function tampilkanData() {
+    let peserta = JSON.parse(localStorage.getItem("peserta")) || [];
+    let tabel = document.getElementById("tabelPeserta");
+
+    tabel.innerHTML = "";
+
+    peserta.forEach((p, index) => {
+        tabel.innerHTML += `
+        <tr>
+            <td>${p.nama}</td>
+            <td>${p.sekolah}</td>
+            <td>${p.jenjang}</td>
+            <td>${p.status}</td>
+            <td>
+                <button onclick="terima(${index})">Terima</button>
+                <button onclick="tolak(${index})">Tolak</button>
+            </td>
+        </tr>`;
+    });
+}
+
+// admin action
+function terima(index) {
+    let peserta = JSON.parse(localStorage.getItem("peserta"));
+    peserta[index].status = "Diterima";
+    localStorage.setItem("peserta", JSON.stringify(peserta));
+    tampilkanData();
+}
+
+function tolak(index) {
+    let peserta = JSON.parse(localStorage.getItem("peserta"));
+    peserta[index].status = "Ditolak";
+    localStorage.setItem("peserta", JSON.stringify(peserta));
+    tampilkanData();
+}
+</script>
+
+</body>
+</html>
